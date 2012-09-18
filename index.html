@@ -1,44 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Easytest by EaseTech</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Easytest : EasyTest is an extension to JUnit to provide easy data driven testing framework to its users." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Easytest</title>
   </head>
+
   <body>
 
-      <header>
-        <h1>Easytest</h1>
-        <p>EasyTest is an extension to JUnit to provide easy data driven testing framework to its users.</p>
-      </header>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/EaseTech/easytest">View on GitHub</a>
 
-      <div id="banner">
-        <span id="logo"></span>
+          <h1 id="project_title">Easytest</h1>
+          <h2 id="project_tagline">EasyTest is an extension to JUnit to provide easy data driven testing framework to its users.</h2>
 
-        <a href="https://github.com/EaseTech/easytest" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/EaseTech/easytest/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/EaseTech/easytest/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/EaseTech/easytest/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/EaseTech/easytest/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
 
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
         <h2>EasyTest : A Data Driven Testing approach to JUnit</h2>
 
 <p>An extension of JUnit to perform Data Driven Testing using annotations.</p>
@@ -72,14 +64,39 @@ Finally I wanted to bring back the same ease of use to the testing world, like w
 
 <p>This code base consists of :</p>
 
-<p>1) A customized JUnit Runner(extending BlockJUnit4Runner) that provides the test data in a consistent and user controlled manner. It is called EasyTestRunner. 
+<p>1) A customized JUnit Runner that gives its user ability to provide test data in a consistent and user controlled manner. It is called DataDrivenTest. 
 This Runner works on our favorite annotation <a href="https://github.com/test" class="user-mention">@test</a> from JUnit and also supports passing parameters to the test method. And this is not its only selling point.</p>
 
-<p>2) A Data Loading Strategy consisting of interface Loader and classes LoaderFactory and CSVDataLoader and an Enum loaderType. 
-CSVDataLoader is an implementation of Loader interface and provides a mechanism to load test data from a CSV file.
-LoaderFactory is a Factory class that is responsible for returning the right type of Loader based on the loaderType.</p>
+<p>2) DataDrivenTest runner gives its users the ability to inspect the testMethod and its associated test data in the IDE. 
+For example, when a user runs the test method with name : getTestData with the following test data:</p>
 
-<p>3) Param annotation that is an extension of ParametersSuppliedBy annotation and provides a lot of useful features to its user. Some of them include:</p>
+<p><b> "libraryId=1 and itemId=2"</b></p>
+
+<p><b> "libraryId=2456 and itemId=789"</b></p>
+
+<p>then, DataDrivenTest, will provide the details of the executing test method in the JUnit supported IDEs like this: </p>
+
+<p><b>getTestData{libraryId=1 ,itemId=2}</b></p>
+
+<p><b>getTestData{libraryId=2456 ,itemId=789}</b></p>
+
+<p>NOTE: In case the user has simple test methods(without parameters), DataDrivenTest runner supports that implicitly.</p>
+
+<p>3) A Data Loading Strategy consisting of interface Loader and classes LoaderFactory and CSVDataLoader and an Enum LoaderType. 
+EasyTest supports four different ways for the user to load Data:</p>
+
+<ul>
+<li>CSV</li>
+<li>XECEL</li>
+<li>XML</li>
+<li>
+<p>CUSTOM</p>
+
+<p>CSV, EXCE,XML data loader implementation is already available and the users can use it out of the box.
+To give an example of the design, CSVDataLoader is an implementation of Loader interface and provides a mechanism to load test data from a CSV file.
+LoaderFactory is a Factory class that is responsible for returning the right type of Loader based on the loaderType.</p>
+</li>
+</ul><p>3) Param annotation that is an extension of ParametersSuppliedBy annotation and provides a lot of useful features to its user. Some of them include:</p>
 
 <ul>
 <li><p>A mechanism to provide custom Objects to the test method. For eg. if a test method requires a user defined object LibraryId, then the Param annotation 
@@ -96,8 +113,10 @@ See <b>CASE 4 </b>below </p></li>
 <li>
 <p>The custom loader that is used by users to provide custom data loaders. It is an OPTIONAL field. </p>
 
-<p>Currently the framework only support CSV loader Type and in case the Framework does not support the specified loader Type the test execution will fail.
-The annotation can be applied both at the Class level as well as at the method level. In case the annotation is applied at both places, then method level takes precedence over Class level.</p>
+<p>DataLoader annotation can be used both at the class level as well as at the method level.
+In case the annotation is applied at both places, then method level takes precedence over Class level.</p>
+
+<p>Currently the framework supports CSV , XML, Excel and Custom loader Type.</p>
 </li>
 </ul><p>5)DataContext class that contains thread-local variables that stores test data as well as the name of the currently executing test method.</p>
 
@@ -107,7 +126,7 @@ The annotation can be applied both at the Class level as well as at the method l
 
 <p><b>CASE 1</b>: Provides input test data in the form of CSV file at the class level, that is used by the test methods.</p>
 
-<pre><code>@RunWith(EasyTestRunner.class)
+<pre><code>@RunWith(DataDrivenTest.class)
 @DataLoader(filePaths = { "getItemsData.csv" }, loaderType = LoaderType.CSV)
 public class TestConditionsSupportedByEasyTestRunner {
 
@@ -125,9 +144,9 @@ Map&lt;String, String&gt; inputData) {
 }
 </code></pre>
 
-<p><b>CASE 2</b>: User provides input test data in the form of CSV file at the method level only.</p>
+<p><b>CASE 2</b>: User provides input test data in the form of EXCEL file at the method level only.</p>
 
-<pre><code>@RunWith(EasyTestRunner.class)
+<pre><code>@RunWith(DataDrivenTest.class)
 public class TestConditionsSupportedByEasyTestRunner {
 
 
@@ -136,7 +155,7 @@ public class TestConditionsSupportedByEasyTestRunner {
  * @param inputData a generic map of input test data that contains all the required parameters for the test data.
  */
 @Test
-@DataLoader(filePaths = { "getItemsData.csv" }, loaderType = LoaderType.CSV)
+@DataLoader(filePaths = { "getItemsData.xls" }, loaderType = LoaderType.EXCEL)
 public void testGetItems(@Param()
 Map&lt;String, String&gt; inputData) {
     System.out.println("library Id : " + inputData.get("LibraryId") + " and item type : "
@@ -145,10 +164,10 @@ Map&lt;String, String&gt; inputData) {
 }
 </code></pre>
 
-<p><b>CASE 3</b>: User provides input test data in the form of CSV file at the Class level as well as method level. In this case method level test data takes priority over class level test data.</p>
+<p><b>CASE 3</b>: User provides input test data in the form of XML file at the Class level and as CSV file at method level. In this case method level test data takes priority over class level test data.</p>
 
-<pre><code>@RunWith(EasyTestRunner.class)
-@DataLoader(filePaths = { "getItemsData.csv" }, loaderType = LoaderType.CSV)
+<pre><code>@RunWith(DataDrivenTest.class)
+@DataLoader(filePaths = { "getItemsData.xml" }, loaderType = LoaderType.XML)
 public class TestConditionsSupportedByEasyTestRunner {
 
 
@@ -166,31 +185,9 @@ Map&lt;String, String&gt; inputData) {
 }
 </code></pre>
 
-<p><b>CASE 4</b>: User can also provide its custom Data Loader both at the Class level as well as at the method level. The below example shows using Custom Loader at the method level :</p>
-
-<pre><code>@RunWith(EasyTestRunner.class)
-@DataLoader(filePaths = { "getItemsData.csv" }, fileType = FileType.CSV)
-public class TestConditionsSupportedByEasyTestRunner {
-
-
-/**
- * A Simple test that uses data provided by TestData annotation present at the Method level
- * @param inputData a generic map of input test data that contains all the required parameters for the test data.
- */
-@Test
-@DataLoader(loader = MyDataLoader.class, loaderType = LoaderType.CUSTOM)
-@CustomLoader(loader = MyDataLoader.class)
-public void testGetItems(@Param()
-Map&lt;String, String&gt; inputData) {
-    System.out.println("library Id : " + inputData.get("LibraryId") + " and item type : "
-        + inputData.get("itemType") + " and search text array :" + inputData.get("searchText"));
-
-}
-</code></pre>
-
 <p><b>CASE 5</b>: User can also use their custom defined Objects as parameters in the test case. In this case LibraryId and ItenmId will be resolved using RegsitryEditorSupport of java:</p>
 
-<pre><code>@RunWith(EasyTestRunner.class)
+<pre><code>@RunWith(DataDrivenTest.class)
 @DataLoader(filePaths = { "getItemsData.csv" }, loaderType = LoaderType.CSV)
 public class TestConditionsSupportedByEasyTestRunner {
 
@@ -231,12 +228,17 @@ This extension also focuses mainly on performing Data Driven Testing within your
 This extension is meant for people who want to write Test cases once and then reuse them again and again.
 A single test can act both as a Unit Test and an integration test. Nothing in the test case should or will change. Only the test data and the tesSubject will change. This saves a lot of developers time and in turn of the project.</p>
       </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/EaseTech">EaseTech</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Easytest maintained by <a href="https://github.com/EaseTech">EaseTech</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
     
+
   </body>
 </html>
