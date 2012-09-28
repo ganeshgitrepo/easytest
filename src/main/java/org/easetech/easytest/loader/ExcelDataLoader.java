@@ -129,13 +129,8 @@ public class ExcelDataLoader implements Loader {
                     } else {
                         actualData.put(tempData.get(column).toString(), objectFrom(workbook, cell));
                     }
-
                 }
                 isFirstColumn = false;
-                LOG.debug("column"+column);
-                if(cellData != null){
-                    LOG.debug("column"+column+", cellData:"+cellData.toString());
-                }
                 column++;
             }
             if (!keyRow) {
@@ -144,8 +139,7 @@ public class ExcelDataLoader implements Loader {
         }
         return finalData;
     }
-
-
+ 
 
     /**
      * Get the cell value from the workbook and the specified cell within the workbook.
@@ -334,7 +328,7 @@ public class ExcelDataLoader implements Loader {
                     if (!isActualResultHeaderWritten) {
                         Integer recordNum = getMethodRowNumFromExcel(sheet, methodName);
                         if (recordNum != null) {
-                            // Write the actual result and test status headers.
+                        	// Write the actual result and test status headers.
                             writeDataToCell(sheet, recordNum, columnNum, ACTUAL_RESULT);
                             writeDataToCell(sheet,recordNum,columnNum+1,TEST_STATUS);
                             rowNum = rowNum + recordNum;
