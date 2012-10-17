@@ -3,9 +3,12 @@ package org.easetech.easytest.example;
 
 import java.beans.PropertyEditorManager;
 import java.util.Map;
+
 import junit.framework.Assert;
+
 import org.easetech.easytest.annotation.DataLoader;
 import org.easetech.easytest.annotation.Param;
+import org.easetech.easytest.annotation.Report;
 import org.easetech.easytest.converter.ConverterManager;
 import org.easetech.easytest.example.editors.LibraryIdEditor;
 import org.easetech.easytest.loader.LoaderType;
@@ -26,6 +29,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(DataDrivenTestRunner.class)
 @DataLoader(filePaths = { "getDDTData.csv" }, loaderType = LoaderType.CSV)
+@Report
 public class TestConditionsSupportedByDataDrivenTest {
 
     /**

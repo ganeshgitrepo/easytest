@@ -18,6 +18,7 @@ import org.easetech.easytest.loader.DataConverter;
 import org.easetech.easytest.loader.Loader;
 import org.easetech.easytest.loader.LoaderFactory;
 import org.easetech.easytest.loader.LoaderType;
+import org.easetech.easytest.reports.data.ReportDataContainer;
 import org.easetech.easytest.util.DataContext;
 import org.easetech.easytest.util.RunAftersWithOutputData;
 import org.junit.AfterClass;
@@ -97,6 +98,11 @@ public class SpringTestRunner extends Suite {
      */
     private String mapMethodName = "";
 
+    /**
+     * The report container which holds all the reporting data
+     */
+    private ReportDataContainer testReportContainer = null;
+    
     /**
      * An instance of logger associated with the test framework.
      */
@@ -368,7 +374,7 @@ public class SpringTestRunner extends Suite {
                 dataLoader = null;
             }
 
-            return new RunAftersWithOutputData(statement, afters, null, dataLoader, dataFiles, writableData);
+            return new RunAftersWithOutputData(statement, afters, null, dataLoader, dataFiles, writableData, testReportContainer);
         }
 
         /**

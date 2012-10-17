@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.easetech.easytest.loader.DataConverter;
 import org.easetech.easytest.loader.Loader;
 import org.easetech.easytest.loader.LoaderFactory;
 import org.easetech.easytest.loader.LoaderType;
+import org.easetech.easytest.reports.data.ReportDataContainer;
 import org.easetech.easytest.util.DataContext;
 import org.easetech.easytest.util.RunAftersWithOutputData;
 import org.junit.AfterClass;
@@ -93,6 +95,11 @@ public class DataDrivenTestRunner extends Suite {
      * The name of the method currently being executed. Used for populating the {@link #writableData} map.
      */
     private String mapMethodName = "";
+    
+    /**
+     * The report container which holds all the reporting data
+     */
+    private ReportDataContainer testReportContainer = null;
 
     /**
      * An instance of logger associated with the test framework.
@@ -163,6 +170,9 @@ public class DataDrivenTestRunner extends Suite {
                 testInstance = getTestClass().getOnlyConstructor().newInstance();
                 instrumentClass(getTestClass().getJavaClass());
                 
+                // initialize report container class
+                // TODO add condition whether reports must be switched on or off
+                testReportContainer = new ReportDataContainer(getTestClass().getName());
             } catch (Exception e) {
                 Assert.fail("Test failed while trying to instrument fileds in the class : " + getTestClass().getJavaClass());
             }
@@ -347,7 +357,7 @@ public class DataDrivenTestRunner extends Suite {
                 dataLoader = null;
             }
 
-            return new RunAftersWithOutputData(statement, afters, null, dataLoader, dataFiles, writableData);
+            return new RunAftersWithOutputData(statement, afters, null, dataLoader, dataFiles, writableData, testReportContainer);
         }
 
         /**
@@ -470,7 +480,11 @@ public class DataDrivenTestRunner extends Suite {
                     listOfAssignments.add(Assignments.allUnassigned(fTestMethod.getMethod(), getTestClass()));
                 }
                 for (Assignments assignments : listOfAssignments) {
-                    runWithCompleteAssignment(assignments);
+                    try {
+						runWithCompleteAssignment(assignments);
+					} catch (Exception e) {
+						System.out.println("here I am");
+					}
                 }
             }
 
@@ -504,7 +518,8 @@ public class DataDrivenTestRunner extends Suite {
                                 } catch (AssumptionViolatedException e) {
                                     handleAssumptionViolation(e);
                                 } catch (Throwable e) {
-                                    reportParameterizedError(e, complete.getArgumentStrings(true));
+                                	testReportContainer.addTestResult(mapMethodName, null, "", Boolean.FALSE, "", null, "");
+                                    //reportParameterizedError(e, complete.getArgumentStrings(true));
                                 }
                             }
 
@@ -548,18 +563,27 @@ public class DataDrivenTestRunner extends Suite {
                 return new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
+
+                    	String currentMethodName = method.getMethod().getName();
+                    	Boolean testPassed = Boolean.FALSE;
+                    	Boolean testException = null;
+                    	Map<String, Object> inputMap = null;
+                    	Object returnObj = null;
+                    	
                         try {
                             final Object[] values = complete.getMethodArguments(true);
                             //Log Statistics about the test method as well as the actual testSubject, if required.
                             
-                            Object returnObj = method.invokeExplosively(freshInstance, values);
+                            returnObj = method.invokeExplosively(freshInstance, values);
+                            testPassed = Boolean.TRUE;
+                            
                             if (returnObj != null) {
                                 LOG.debug("returnObj:" + returnObj);
                                 // checking and assigning the map method name.
-                                if (!mapMethodName.equals(method.getMethod().getName())) {
+								if (!mapMethodName.equals(currentMethodName)) {
                                     // if mapMethodName is not same as the current executing method name
                                     // then assign that to mapMethodName to write to writableData
-                                    mapMethodName = method.getMethod().getName();
+                                    mapMethodName = currentMethodName;
                                     // initialize the row number.
                                     rowNum = 0;
                                 }
@@ -568,9 +592,11 @@ public class DataDrivenTestRunner extends Suite {
                                     LOG.debug("writableData.get(mapMethodName)" + writableData.get(mapMethodName)
                                         + " ,rowNum:" + rowNum);
                                     Map<String, Object> writableRow = writableData.get(mapMethodName).get(rowNum);
+                                    inputMap = new HashMap<String, Object>(writableRow);
                                     writableRow.put(Loader.ACTUAL_RESULT, returnObj);
 
                                     Object expectedResult = writableRow.get(Loader.EXPECTED_RESULT);
+                                    System.out.println("--------------"+expectedResult);
                                     // if expected result exist in user input test data,
                                     // then compare that with actual output result
                                     // and write the status back to writable map data.
@@ -578,17 +604,22 @@ public class DataDrivenTestRunner extends Suite {
                                         LOG.debug("Expected result exists");
                                         if (expectedResult.toString().equals(returnObj.toString())) {
                                             writableRow.put(Loader.TEST_STATUS, Loader.TEST_PASSED);
+                                            testPassed = Boolean.TRUE;
                                         } else {
                                             writableRow.put(Loader.TEST_STATUS, Loader.TEST_FAILED);
                                         }
+                                        // TODO exception ???
                                     }
                                     rowNum++;
                                 }
 
                             }
                         } catch (CouldNotGenerateValueException e) {
-                            // ignore
+                        	// ignore
+                        	System.out.println(e);
                         }
+                        Object returnObject = (returnObj == null) ? "void" : returnObj;
+                        testReportContainer.addTestResult(currentMethodName, inputMap, returnObject, testPassed, "", testException, "");
                     }
                 };
             }

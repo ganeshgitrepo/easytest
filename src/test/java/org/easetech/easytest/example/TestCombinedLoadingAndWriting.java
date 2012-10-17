@@ -1,5 +1,7 @@
 package org.easetech.easytest.example;
 
+import junit.framework.Assert;
+
 import org.junit.runner.RunWith;
 
 import org.easetech.easytest.annotation.DataLoader;
@@ -37,6 +39,12 @@ public class TestCombinedLoadingAndWriting {
         Item item = itemService.findItem(new LibraryId(Long.valueOf(libraryId.longValue())),
             new ItemId(Long.valueOf(itemId.longValue())));
         return item;
+    }
+    
+    @Test  
+    public void getExcelTestDataWithReturnTypeFail() {
+    	System.out.println("print");
+        Assert.fail("Fsiled");
     }
 
 }
