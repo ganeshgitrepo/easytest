@@ -1,5 +1,7 @@
 package org.easetech.easytest.example;
 
+import junit.framework.Assert;
+
 import org.junit.runner.RunWith;
 
 import org.easetech.easytest.annotation.DataLoader;

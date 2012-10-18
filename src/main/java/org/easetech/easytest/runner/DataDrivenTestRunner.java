@@ -21,6 +21,7 @@ import org.easetech.easytest.util.DataContext;
 import org.easetech.easytest.util.RunAftersWithOutputData;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.theories.ParametersSuppliedBy;
 import org.junit.experimental.theories.PotentialAssignment;
@@ -28,7 +29,10 @@ import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValue
 import org.junit.experimental.theories.internal.Assignments;
 import org.junit.experimental.theories.internal.ParameterizedAssertionError;
 import org.junit.internal.AssumptionViolatedException;
+import org.junit.internal.runners.model.EachTestNotifier;
+import org.junit.runner.Description;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
@@ -205,7 +209,6 @@ public class DataDrivenTestRunner extends Suite {
         @Override
         protected void collectInitializationErrors(List<Throwable> errors) {
             super.collectInitializationErrors(errors);
-            // validateDataPointFields(errors);
         }
 
         /**
@@ -235,12 +238,6 @@ public class DataDrivenTestRunner extends Suite {
             if (frameworkMethods != null && !frameworkMethods.isEmpty()) {
                 return frameworkMethods;
             }
-            // superMethodName variable comes from the enclosing DataDrivenTest class.
-            // It holds the name of the test method on which the DataDrivenTestRunner instance will work.
-            // if (superMethodName == null) {
-            // Assert.fail("Cannot compute Test Methods to run");
-            // }
-
             List<FrameworkMethod> finalList = new ArrayList<FrameworkMethod>();
             //Iterator<FrameworkMethod> testMethodsItr = super.computeTestMethods().iterator();
             Class<?> testClass = getTestClass().getJavaClass();
@@ -495,20 +492,31 @@ public class DataDrivenTestRunner extends Suite {
                     @Override
                     public Statement methodBlock(FrameworkMethod method) {
                         final Statement statement = super.methodBlock(method);
-                        return new Statement() {
+                        //Sample Run Notifier to catch any runnable events for a test and do something.
+                        final RunNotifier notifier = new RunNotifier();
+                        notifier.addListener(new EasyTestRunListener());
+                        final EachTestNotifier eachNotifier= new EachTestNotifier(notifier,null);
+                        eachNotifier.fireTestStarted();
+                        
+                        Statement newStatement = new Statement() {
                             @Override
                             public void evaluate() throws Throwable {
                                 try {
                                     statement.evaluate();
                                     handleDataPointSuccess();
                                 } catch (AssumptionViolatedException e) {
+                                    eachNotifier.addFailedAssumption(e);
                                     handleAssumptionViolation(e);
                                 } catch (Throwable e) {
+                                    eachNotifier.addFailure(e);
                                     reportParameterizedError(e, complete.getArgumentStrings(true));
+                                }finally {
+                                    eachNotifier.fireTestFinished();
                                 }
                             }
 
                         };
+                        return newStatement;
                     }
 
                     @Override
@@ -545,6 +553,7 @@ public class DataDrivenTestRunner extends Suite {
              */
             private Statement methodCompletesWithParameters(final FrameworkMethod method, final Assignments complete,
                 final Object freshInstance) {
+                
                 return new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
@@ -780,6 +789,15 @@ public class DataDrivenTestRunner extends Suite {
      */
     @Override
     protected Statement withBeforeClasses(Statement statement) {
+        return statement;
+    }
+    
+    /**
+     * Returns a {@link Statement}: We override this method as it was being called twice 
+     * for the same class. Looks like a bug in JUnit.
+     */
+    @Override
+    protected Statement withAfterClasses(Statement statement) {
         return statement;
     }
 
