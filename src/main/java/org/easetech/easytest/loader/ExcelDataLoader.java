@@ -397,7 +397,6 @@ public class ExcelDataLoader implements Loader {
                 String cellData = cell.getStringCellValue();
                 if (cellData != null && methodName.equals(cellData.trim())) {
                     rowNum = cell.getRow().getRowNum();
-                    System.out.println("methodName matched at rowNum:" + rowNum);
                     break;
                 }
             }
