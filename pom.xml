@@ -30,6 +30,11 @@
    <name>Ravi Polampelli</name>
    <email>ravi.polampelli@gmail.com</email>
   </developer>
+   <developer>
+   <id>gpcmol</id>
+   <name>Christiaan Mol</name>
+   <email>gpcmol@gmail.com</email>
+  </developer>
  </developers>
  <licenses>
   <license>
@@ -105,8 +110,6 @@
     <version>2.2.2</version>
     <configuration>
      <username>anujgandharv</username>
-     <password>temp123</password>
-
      <mavenExecutorId>forked-path</mavenExecutorId>
     </configuration>
    </plugin>
