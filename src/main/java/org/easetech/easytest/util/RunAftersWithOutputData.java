@@ -4,8 +4,8 @@ package org.easetech.easytest.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.easetech.easytest.loader.Loader;
 import org.junit.AfterClass;
+import org.junit.experimental.theories.internal.ParameterizedAssertionError;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.MultipleFailureException;
@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extension of {@link RunAfters} method to write 
- * the test data to the file at the end of executing all the test methods in the test cases.
+ * An extension of {@link RunAfters} method to write the test data to the file at the end of executing all the test
+ * methods in the test cases.
  * 
  */
 public class RunAftersWithOutputData extends Statement {
@@ -24,17 +24,17 @@ public class RunAftersWithOutputData extends Statement {
      * An instance of logger associated with the test framework.
      */
     protected static final Logger LOG = LoggerFactory.getLogger(RunAftersWithOutputData.class);
-    
-	/**
-     * An instance of {@link Loader} responsible for writing the data to the file.
-     */
-    private final Loader loader;
 
     /**
-     * An array of File paths containing the path to the file to which data needs to be written. 
-     * Currently we take the first path in the array and try to write the output data to that file. 
+     * An instance of {@link Loader} responsible for writing the data to the file.
      */
-    private final String[] filePath;
+    // private final Loader loader;
+
+    /**
+     * An array of File paths containing the path to the file to which data needs to be written. Currently we take the
+     * first path in the array and try to write the output data to that file.
+     */
+    // private final String[] filePath;
 
     /**
      * The actual data structure that contains both the input as well as output data
@@ -42,7 +42,7 @@ public class RunAftersWithOutputData extends Statement {
     private Map<String, List<Map<String, Object>>> writableData;
 
     /**
-     * An instance of {@link Statement} 
+     * An instance of {@link Statement}
      */
     private final Statement fNext;
 
@@ -50,6 +50,11 @@ public class RunAftersWithOutputData extends Statement {
      * The target class on which to invoke the {@link AfterClass} annotated method
      */
     private final Object fTarget;
+    
+    /**
+     * The list of {@link TestInfo} objects that contains the information required to write data back to the file.
+     */
+    private final List<TestInfo> testInfoList;
 
     /**
      * List of {@link FrameworkMethod} that should be run as part of teh {@link AfterClass} annotation.
@@ -64,18 +69,16 @@ public class RunAftersWithOutputData extends Statement {
      *            have been executed.
      * @param target the target instance of the class. In this case it will always be null since methods with
      *            {@link AfterClass} are always declared as static.
-     * @param loader the instance of loader responsible for writing the test data to the output file
-     * @param filePath an array of files that contain the input test data
+     * @param testInfoList the list of {@link TestInfo} containing information required to write data back to the file.
      * @param writableData the writable data that needs to be written to the file.
      */
-    public RunAftersWithOutputData(Statement next, List<FrameworkMethod> afters, Object target, Loader loader,
-        String[] filePath, Map<String, List<Map<String, Object>>> writableData) {
+    public RunAftersWithOutputData(Statement next, List<FrameworkMethod> afters, Object target,
+        List<TestInfo> testInfoList, Map<String, List<Map<String, Object>>> writableData) {
         super();
         this.fNext = next;
         this.fAfters = afters;
         this.fTarget = target;
-        this.loader = loader;
-        this.filePath = filePath;
+        this.testInfoList = testInfoList;
         this.writableData = writableData;
     }
 
@@ -85,7 +88,7 @@ public class RunAftersWithOutputData extends Statement {
      */
     @Override
     public void evaluate() throws Throwable {
-    	LOG.info("evaluate started");
+        LOG.info("evaluate started");
         List<Throwable> errors = new ArrayList<Throwable>();
         try {
             fNext.evaluate();
@@ -101,10 +104,16 @@ public class RunAftersWithOutputData extends Statement {
         }
         MultipleFailureException.assertEmpty(errors);
         // Write any output test data to the file only if there is a write data associated with the test method.
-        if (loader != null && filePath.length > 0) {
-        	LOG.debug("Loader:"+loader+", filePath:"+filePath[0]);
-        	LOG.debug("writableData:"+writableData);
-            loader.writeData(filePath[0], writableData);
+        for (TestInfo testInfo : testInfoList) {
+            if (testInfo.getFilePaths() != null && testInfo.getDataLoader() != null) {
+                try {
+                    testInfo.getDataLoader().writeData(testInfo.getFilePaths(), testInfo.getMethodName(), writableData);
+                } catch (Exception e) {
+                    
+                    throw new ParameterizedAssertionError(e, testInfo.getMethodName(), testInfo);
+                }
+            }
+
         }
         LOG.info("evaluate finished");
     }

@@ -38,7 +38,7 @@ public class TestExcelDataLoader {
     }
 
     @Test
-    //@DataLoader(filePaths={"overrideExcelData.csv"} , loaderType=LoaderType.CSV)
+    @DataLoader(filePaths={"overrideExcelData.csv"} , loaderType=LoaderType.CSV)
     public Item getExcelTestDataWithDouble(@Param(name = "libraryId")
     Double libraryId, @Param(name = "itemId")
     Double itemId) {
