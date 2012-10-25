@@ -1,15 +1,22 @@
 package org.easetech.easytest.reports.data;
 
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 import org.easetech.easytest.util.CommonUtils;
 
+/**
+ * This class contains the totals of a set of tests
+ * 
+ * @author gpcmol
+ * 
+ */
 public class ReportTotalsBean implements Serializable {
 
 	private static final long serialVersionUID = 2033649257986672921L;
 
 	/**
-	 * Can be a method, class etc.
+	 * Can be a test method name, servicename or class name etc.
 	 */
 	private String item;
 
@@ -27,6 +34,11 @@ public class ReportTotalsBean implements Serializable {
 	 * # of tests has exception
 	 */
 	private Long exception = 0L;
+
+	/**
+	 * Chart of the totals
+	 */
+	private BufferedImage totalsGraph;
 
 	public String getItem() {
 		return item;
@@ -48,6 +60,10 @@ public class ReportTotalsBean implements Serializable {
 		this.passed++;
 	}
 
+	public void addPassed(long passed) {
+		this.passed += passed;
+	}
+
 	public Long getFailed() {
 		return failed;
 	}
@@ -60,6 +76,10 @@ public class ReportTotalsBean implements Serializable {
 		this.failed++;
 	}
 
+	public void addFailed(long failed) {
+		this.failed += failed;
+	}
+
 	public Long getException() {
 		return exception;
 	}
@@ -70,6 +90,18 @@ public class ReportTotalsBean implements Serializable {
 
 	public void addException() {
 		this.exception++;
+	}
+
+	public void addException(long exception) {
+		this.exception += exception;
+	}
+
+	public BufferedImage getTotalsGraph() {
+		return totalsGraph;
+	}
+
+	public void setTotalsGraph(BufferedImage totalsGraph) {
+		this.totalsGraph = totalsGraph;
 	}
 
 	/**

@@ -4,6 +4,7 @@ package org.easetech.easytest.example;
 import org.easetech.easytest.annotation.DataLoader;
 import org.easetech.easytest.annotation.Intercept;
 import org.easetech.easytest.annotation.Param;
+import org.easetech.easytest.annotation.Report;
 import org.easetech.easytest.loader.LoaderType;
 import org.easetech.easytest.runner.DataDrivenTestRunner;
 import org.junit.BeforeClass;
@@ -11,9 +12,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 @RunWith(DataDrivenTestRunner.class)
 @DataLoader(filePaths = { "org/easetech/data/testExcelData.xls" }, loaderType = LoaderType.EXCEL)
+@Report
 public class TestExcelDataLoader {
     
     @Intercept
@@ -65,6 +68,7 @@ public class TestExcelDataLoader {
     public void getExcelTestDataNumberFormat() {
         System.out.print("Executing getExcelTestDataNumberFormat :");
         System.out.println("This is a simple test");
+        throw new RuntimeException("testqwe");
     }
 
     @Test
@@ -77,6 +81,10 @@ public class TestExcelDataLoader {
         Item item = itemService.findItem(new LibraryId(Long.valueOf(libraryId.longValue())),
             new ItemId(Long.valueOf(itemId.longValue())));
         LOG.debug("return item: " + item.toString());
+        
+        Boolean test = Boolean.FALSE;
+        
+        Assert.isTrue(test, "test TRUE expected");
         return item;
     }
     

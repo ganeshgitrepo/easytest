@@ -7,6 +7,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is a single result of a test run for one test method.
+ * 
+ * @author gpcmol
+ * 
+ */
 public class TestResultBean implements Serializable {
 
 	private static final long serialVersionUID = -2336621400716756554L;
@@ -47,8 +53,9 @@ public class TestResultBean implements Serializable {
 	private String exceptionResult;
 
 	/**
-	 * Test item duration beans (contains items that in the method run are called,
-	 * e.g. method calls)
+	 * Test item duration beans (contains items that in the method run are
+	 * called, e.g. service method calls. These method calls need to be
+	 * annotated with @Intercept)
 	 */
 	private List<DurationBean> testItemDurations;
 
