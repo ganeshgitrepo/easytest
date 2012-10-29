@@ -15,14 +15,20 @@ import org.junit.internal.AssumptionViolatedException;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
-
 import org.junit.runner.notification.RunListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Currently just a placeholder class that will be used later to factor out some common logic from the Runner class.
  *
  */
 public class EasyTestRunListener extends RunListener {
+    
+    /**
+     * An instance of logger associated with the test framework.
+     */
+    protected static final Logger LOG = LoggerFactory.getLogger(EasyTestRunListener.class);
 
     /**
      * Called before any tests have been run.
@@ -30,7 +36,7 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testRunStarted(Description description) throws Exception {
-        System.out.println("testRunStarted");
+        LOG.debug("testRunStarted with Description : " + description);
     }
     
     /**
@@ -39,7 +45,7 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testRunFinished(Result result) throws Exception {
-        System.out.println("testRunFinished");
+        LOG.debug("testRunStarted with Result : " + result);
     }
     
     /**
@@ -49,7 +55,7 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testStarted(Description description) throws Exception {
-        System.out.println("testStarted");
+        LOG.debug("testStarted with Description : " + description);
     }
 
     /**
@@ -58,7 +64,7 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testFinished(Description description) throws Exception {
-        System.out.println("testFinished");
+        LOG.debug("testFinished with Description : " + description);
     }
 
     /** 
@@ -67,7 +73,7 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testFailure(Failure failure) throws Exception {
-        System.out.println("testFailure");
+        LOG.debug("testFailure with Failure : " + failure);
     }
 
     /**
@@ -80,7 +86,7 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testAssumptionFailure(Failure failure) {
-        System.out.println("testAssumptionFailure");
+        LOG.debug("testAssumptionFailure with Failure : " + failure);
     }
 
     /**
@@ -91,6 +97,6 @@ public class EasyTestRunListener extends RunListener {
      */
     @Override
     public void testIgnored(Description description) throws Exception {
-        System.out.println("testIgnored");
+        LOG.debug("testIgnored with Description : " + description);
     }
 }

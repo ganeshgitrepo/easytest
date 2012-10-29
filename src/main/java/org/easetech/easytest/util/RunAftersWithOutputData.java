@@ -1,9 +1,13 @@
-
 package org.easetech.easytest.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.easetech.easytest.annotation.Report;
+import org.easetech.easytest.annotation.Report.EXPORT_FORMAT;
+import org.easetech.easytest.reports.data.ReportDataContainer;
+import org.easetech.easytest.reports.impl.ReportRunner;
 import org.junit.AfterClass;
 import org.junit.experimental.theories.internal.ParameterizedAssertionError;
 import org.junit.internal.runners.statements.RunAfters;
@@ -60,6 +64,11 @@ public class RunAftersWithOutputData extends Statement {
      * List of {@link FrameworkMethod} that should be run as part of teh {@link AfterClass} annotation.
      */
     private final List<FrameworkMethod> fAfters;
+    
+    /**
+     * The report container which holds all the reporting data
+     */
+    private ReportDataContainer testReportContainer;
 
     /**
      * Construct a new RunAftersWithOutputData
@@ -73,13 +82,14 @@ public class RunAftersWithOutputData extends Statement {
      * @param writableData the writable data that needs to be written to the file.
      */
     public RunAftersWithOutputData(Statement next, List<FrameworkMethod> afters, Object target,
-        List<TestInfo> testInfoList, Map<String, List<Map<String, Object>>> writableData) {
+        List<TestInfo> testInfoList, Map<String, List<Map<String, Object>>> writableData , ReportDataContainer testReportContainer) {
         super();
         this.fNext = next;
         this.fAfters = afters;
         this.fTarget = target;
         this.testInfoList = testInfoList;
         this.writableData = writableData;
+        this.testReportContainer = testReportContainer;
     }
 
     /**
@@ -114,6 +124,26 @@ public class RunAftersWithOutputData extends Statement {
                 }
             }
 
+        }
+        
+     // REPORTING
+        if (testReportContainer != null) {
+            Report annotation = testReportContainer.getTestClass().getAnnotation(Report.class);
+            if (annotation != null) {
+                String outputLocationFromAnnotation = annotation.outputLocation();
+                String absoluteLocation = CommonUtils.getAbsoluteLocation(outputLocationFromAnnotation);
+                String outputLocation = CommonUtils.createFolder(absoluteLocation);
+                if (outputLocation != null) {
+                    EXPORT_FORMAT[] outputFormats = annotation.outputFormats();
+                    LOG.info("Reporting phase started " + new Date());
+                    LOG.info("Writing reports to folder: " + outputLocation);
+                    ReportRunner testReportHelper = new ReportRunner(testReportContainer);
+                    testReportHelper.runReports(outputFormats, outputLocation);
+                    LOG.info("Reporting phase finished " + new Date());
+                } else {
+                    LOG.error("Can't write reports. Report output location " + outputLocationFromAnnotation + " can't be created.");
+                }
+            }
         }
         LOG.info("evaluate finished");
     }

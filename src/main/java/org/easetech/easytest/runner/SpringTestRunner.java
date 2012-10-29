@@ -1,11 +1,6 @@
 
 package org.easetech.easytest.runner;
 
-import org.junit.internal.runners.model.EachTestNotifier;
-import org.junit.runner.notification.RunNotifier;
-
-import org.easetech.easytest.util.TestInfo;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -23,8 +18,10 @@ import org.easetech.easytest.loader.DataConverter;
 import org.easetech.easytest.loader.Loader;
 import org.easetech.easytest.loader.LoaderFactory;
 import org.easetech.easytest.loader.LoaderType;
+import org.easetech.easytest.reports.data.ReportDataContainer;
 import org.easetech.easytest.util.DataContext;
 import org.easetech.easytest.util.RunAftersWithOutputData;
+import org.easetech.easytest.util.TestInfo;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,7 +31,9 @@ import org.junit.experimental.theories.PotentialAssignment;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 import org.junit.experimental.theories.internal.Assignments;
 import org.junit.internal.AssumptionViolatedException;
+import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
@@ -90,6 +89,11 @@ public class SpringTestRunner extends Suite {
      */
     private String mapMethodName = "";
 
+    /**
+     * The report container which holds all the reporting data
+     */
+    private ReportDataContainer testReportContainer = null;
+    
     /**
      * An instance of logger associated with the test framework.
      */
@@ -356,7 +360,7 @@ public class SpringTestRunner extends Suite {
                 
             
             }
-            return new RunAftersWithOutputData(statement, afters,  null, testInfoList, writableData);
+            return new RunAftersWithOutputData(statement, afters,  null, testInfoList, writableData, testReportContainer);
         }
 
         /**
