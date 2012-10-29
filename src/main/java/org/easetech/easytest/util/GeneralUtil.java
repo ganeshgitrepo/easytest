@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
  * @author gpcmol
  * 
  */
-public class CommonUtils {
+public class GeneralUtil {
 
-	private static final Logger LOG = LoggerFactory.getLogger(CommonUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GeneralUtil.class);
 
 	private static final String FILE_SEPARATOR = String.valueOf(File.separatorChar);
 
@@ -99,7 +99,7 @@ public class CommonUtils {
 		String path = null;
 		
 		if (location.equals("")) {
-			return CommonUtils.getCurrentFolder();
+			return GeneralUtil.getCurrentFolder();
 		}
 
 		if (location.startsWith("file:")) {
