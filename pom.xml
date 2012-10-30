@@ -111,6 +111,7 @@
     <version>2.2.2</version>
     <configuration>
      <username>anujgandharv</username>
+     <password>temp123</password>
      <mavenExecutorId>forked-path</mavenExecutorId>
     </configuration>
    </plugin>
