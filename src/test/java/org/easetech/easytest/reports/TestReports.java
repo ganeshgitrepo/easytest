@@ -5,12 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.easetech.easytest.reports.data.ReportDataContainer;
 import org.easetech.easytest.reports.data.ReportTotalsBean;
-import org.easetech.easytest.reports.impl.ReportRunner;
 import org.easetech.easytest.reports.utils.ChartUtils;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -23,7 +18,7 @@ public class TestReports {
 //	public void testReports() {
 //
 //		String className = "TestRouteCalculationBusiness";
-//		
+		
 //		ReportDataContainer testReportContainer = new ReportDataContainer(className);
 //		Map<String, Object> input1 = new HashMap<String, Object>();
 //		input1.put("name", "molly");
@@ -66,7 +61,7 @@ public class TestReports {
 		return calendar.getTime();
 	}
 
-	//@Test
+	@Test
 	public void testPieChart() {
 		String locationToSaveFile = "c:/temp";
 		JFreeChart chart = getDummyChart();

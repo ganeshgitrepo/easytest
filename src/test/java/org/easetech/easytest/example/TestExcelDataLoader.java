@@ -72,7 +72,7 @@ public class TestExcelDataLoader {
     public void getExcelTestDataNumberFormat() {
         System.out.print("Executing getExcelTestDataNumberFormat :");
         System.out.println("This is a simple test");
-        throw new RuntimeException("testqwe");
+        //throw new RuntimeException("testqwe");
     }
 
     @Test
@@ -86,9 +86,9 @@ public class TestExcelDataLoader {
             new ItemId(Long.valueOf(itemId.longValue())));
         LOG.debug("return item: " + item.toString());
         
-        Boolean test = Boolean.FALSE;
-        
-        Assert.assertTrue( "test TRUE expected" ,test);
+//        Boolean test = Boolean.FALSE;
+//        
+//        Assert.assertTrue( "test TRUE expected" ,test);
         return item;
     }
     
