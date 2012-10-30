@@ -1,29 +1,6 @@
 package org.easetech.easytest.annotation;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-
-import org.easetech.easytest.converter.Converter;
-import org.easetech.easytest.converter.ConverterManager;
-import org.easetech.easytest.util.DataContext;
-
-
-
-
-
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorManager;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.Assert;
-import org.junit.experimental.theories.ParameterSignature;
-import org.junit.experimental.theories.ParameterSupplier;
-import org.junit.experimental.theories.ParametersSuppliedBy;
-import org.junit.experimental.theories.PotentialAssignment;
 
 /**
  * An extension of Junit's {@link ParametersSuppliedBy} annotation that converts the data for Junit to consume. This
@@ -75,6 +52,7 @@ public @interface Param {
 
     /** The name of the parameter for which value needs to be fetched from the data set */
     String name() default "";
+    
 
     /**
      * Static class that overrides the getValueSources method of {@link ParameterSupplier} to return the data in Junit
@@ -96,7 +74,7 @@ public @interface Param {
             String value = DataContext.getMethodName();
             if(value == null){
                 Assert.fail("The framework could not locate the test data for the test method. If you are using TestData annotation, make sure you specify the test method name in the data file. " +
-                		"In case you are using ParametersSuppliedBy annotation, make sure you are using the right ParameterSupplier subclass.");
+                    	"In case you are using ParametersSuppliedBy annotation, make sure you are using the right ParameterSupplier subclass.");
             }
             List<PotentialAssignment> listOfData = null;
             Map<String, List<Map<String, Object>>> data = DataContext.getConvertedData();
@@ -146,6 +124,10 @@ public @interface Param {
                         if(getStringValue(paramName, object) != null){
                             editor.setAsText(getStringValue(paramName, object));
                             //object.remove(paramName);
+                        }else {
+                        	//even if there is no value then we need to set null
+                        	//this is important to test null conditions, user might be testing these intentionally.
+                        	editor.setAsText(null);
                         }
                         
                     } else {
@@ -166,7 +148,74 @@ public @interface Param {
                         finalData.add(PotentialAssignment.forValue("", converter.convert(object)));
                     }
                 }else{
-                    Assert.fail("Could not find either Editor or Converter instance for class :"  + idClass);
+                	//if there is no coverter and editor, values will be converted using our GeneralUtil methods
+                	// these methods cover multiple combinations of types from test data file 
+                	//to the target data type
+                	String idClassName = idClass.getName(); 
+                	if("java.sql.Timestamp".equals(idClassName)){
+	                	for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToSQLTimestamp(object.get(paramName))));                		
+	                	}
+                	} else if("java.sql.Time".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToSQLTime(object.get(paramName))));                		
+	                	}
+                	} else if("java.sql.Date".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToSQLDate(object.get(paramName))));                		
+	                	}
+                	} else if("java.util.Date".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToUtilDate(object.get(paramName))));                		
+	                	}
+                	}  else if("java.lang.Double".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToDouble(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Float".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToFloat(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Long".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToLong(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Integer".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToInteger(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Boolean".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToBoolean(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Byte".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToByte(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Character".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToCharacter(object.get(paramName))));                		
+	                	}
+                	} else if("java.lang.Short".equals(idClassName)){
+                		for(Map<String, Object> object : convertFrom){
+	                		finalData.add(PotentialAssignment.forValue("", 
+	                				GeneralUtil.convertToShort(object.get(paramName))));                		
+	                	}
+                	} else {
+                		Assert.fail("Could not find either Editor or Converter instance for class :"  + idClass);
+                	}
+                
                 }
                 
             }
