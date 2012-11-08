@@ -1,6 +1,8 @@
 
 package org.easetech.easytest.example;
 
+import java.util.Date;
+
 import org.easetech.easytest.annotation.DataLoader;
 import org.easetech.easytest.annotation.Param;
 import org.easetech.easytest.loader.LoaderType;
@@ -30,8 +32,9 @@ public class TestExcelDataLoader {
     //@DataLoader(filePaths={"overrideExcelData.csv"} , loaderType=LoaderType.CSV)
     public Item getExcelTestDataWithDouble(@Param(name = "libraryId")
     Double libraryId, @Param(name = "itemId")
-    Double itemId) {
+    Integer itemId, @Param(name="itemDate")Date itemCreationDate) {
         System.out.print("Executing getExcelTestDataWithDouble :");
+        System.out.println(itemCreationDate);
         // if(itemId.equals(11568.0D)){
         // Assert.fail("ItemId is 11568 but should be 2");
         // }

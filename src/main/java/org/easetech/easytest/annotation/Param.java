@@ -1,6 +1,30 @@
 package org.easetech.easytest.annotation;
 
+import java.sql.Time;
+
+import java.util.Date;
+
+import java.sql.Timestamp;
+
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import junit.framework.Assert;
+import org.easetech.easytest.converter.Converter;
+import org.easetech.easytest.converter.ConverterManager;
+import org.easetech.easytest.util.DataContext;
+import org.easetech.easytest.util.GeneralUtil;
+import org.junit.experimental.theories.ParameterSignature;
+import org.junit.experimental.theories.ParameterSupplier;
+import org.junit.experimental.theories.ParametersSuppliedBy;
+import org.junit.experimental.theories.PotentialAssignment;
 
 /**
  * An extension of Junit's {@link ParametersSuppliedBy} annotation that converts the data for Junit to consume. This
@@ -151,63 +175,63 @@ public @interface Param {
                 	//if there is no coverter and editor, values will be converted using our GeneralUtil methods
                 	// these methods cover multiple combinations of types from test data file 
                 	//to the target data type
-                	String idClassName = idClass.getName(); 
-                	if("java.sql.Timestamp".equals(idClassName)){
-	                	for(Map<String, Object> object : convertFrom){
-	                		finalData.add(PotentialAssignment.forValue("", 
-	                				GeneralUtil.convertToSQLTimestamp(object.get(paramName))));                		
-	                	}
-                	} else if("java.sql.Time".equals(idClassName)){
+                	if(Timestamp.class.isAssignableFrom(idClass)){
+                	    for(Map<String, Object> object : convertFrom){
+                            finalData.add(PotentialAssignment.forValue("", 
+                                    GeneralUtil.convertToSQLTimestamp(object.get(paramName))));                     
+                        }
+                	}
+                	 else if(Time.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToSQLTime(object.get(paramName))));                		
 	                	}
-                	} else if("java.sql.Date".equals(idClassName)){
+                	} else if(java.sql.Date.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToSQLDate(object.get(paramName))));                		
 	                	}
-                	} else if("java.util.Date".equals(idClassName)){
+                	} else if(Date.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToUtilDate(object.get(paramName))));                		
 	                	}
-                	}  else if("java.lang.Double".equals(idClassName)){
+                	}  else if(Double.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToDouble(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Float".equals(idClassName)){
+                	} else if(Float.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToFloat(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Long".equals(idClassName)){
+                	} else if(Long.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToLong(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Integer".equals(idClassName)){
+                	} else if(Integer.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToInteger(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Boolean".equals(idClassName)){
+                	} else if(Boolean.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToBoolean(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Byte".equals(idClassName)){
+                	} else if(Byte.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToByte(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Character".equals(idClassName)){
+                	} else if(Character.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToCharacter(object.get(paramName))));                		
 	                	}
-                	} else if("java.lang.Short".equals(idClassName)){
+                	} else if(Short.class.isAssignableFrom(idClass)){
                 		for(Map<String, Object> object : convertFrom){
 	                		finalData.add(PotentialAssignment.forValue("", 
 	                				GeneralUtil.convertToShort(object.get(paramName))));                		
